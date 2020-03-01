@@ -1,0 +1,3 @@
+[submodule "PiStarter"]
+	path = PiStarter
+	url = https://github.com/horinoh/PiStarter.git
