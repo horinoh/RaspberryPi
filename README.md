@@ -127,13 +127,57 @@
             export LD_LIBRARY_PATH
             ~~~
             - gpiodetect
+                - GPIOチップをリストアップ
             - gpioinfo
+                - GPIOチップのラインをリストアップ
             - gpioget
+                - GPIOラインの値をゲット
             - gpioset
+                - GPIOラインへ値をセット
             - gpiofind
+                - 名前からGPIOチップとラインをゲット
             - gpiomon
             - 例
-                - 
+                ~~~
+                # ヘルプ表示
+                $gpioXXX -h
+
+                # GPIOチップをリストアアップ
+                $gpiodetect
+                gpiochip0 ... (54 lines)
+
+                # GPIOチップのラインをリストアップ
+                $gpioinfo gpiochip0
+                gpiochip0 - 54 lines
+                    line    0:  unmaed unused   input active-high
+                    ...
+                    line    53: unmaed unused   input active-high
+                
+                # 値のゲット
+                $gpioget gpiochip1 23
+                0
+                
+                # 値のセット
+                $gpioset gpiochp1 23=1
+
+                # GPIOチップとラインを名前から見つける
+                $gpiofind "USR-LED-2"
+                gpiochiop1 23
+
+                $gpioset --mode=wait `gpiofind "USR-LED-2"`=1
+
+                $gpioset --mode=signal --background gpiochip1 23=0 24=0
+                $gpioset gpiochio1 23=1
+            
+                $gpioget --active-low gpiochip1 23 24
+                1 1
+                
+                $gpiomon --num-events=3 --rising-edge gpiochip2 3
+                $gpiomon --format="%e %o %s %n" --falling-edge gpiochip1 4
+                $gpiomon --num-events=1 --silent `gpiofind "USR-IN"`
+                $gpiomon --silent --num-events=1 gpiochip0 2 3 5
+                ~~~
+
 <!--
 - シリアルデバッグ
     - シリアルデバッグを有効化する
@@ -200,6 +244,9 @@
         (setq make-backup-files nil)
         (setq auto-save-default nil)
     ~~~
+
+- mathmatica
+    - $sudo apt-get install -y wolfram-engine
 
 <!--
 - VSCode
