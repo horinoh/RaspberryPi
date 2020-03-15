@@ -17,17 +17,32 @@
 - 起動すると初期設定のダイアログが出るのでそれに従って進める
 
 - 更新
-    - $sudo apt-get update
-    - $sudo apt-get upgrade
+    ~~~
+    $sudo apt-get update
+    $sudo apt-get upgrade
+    $sudo apt-get clean
+    $sudo apt-get autoclean
+    ~~~
 
 - ファイルシステムの拡張
-    - $sudo raspi-config - Advanced Options - Expand filesystem
+    ~~~
+    $sudo raspi-config - Advanced Options - Expand filesystem
+    ~~~
 
 - SSH
-    - $sudo raspi-config - Interfacing Options - SSH - Yes
+    ~~~
+    $sudo raspi-config - Interfacing Options - SSH - Yes
+    ~~~
+    - Windows Power Shell からログイン
+        ~~~
+        ssh pi@raspberrypi.local
+        ~~~
+    - もしくは[RLogin](http://nanno.dip.jp/softlib/man/rlogin/)等でログイン
 
  - Samba
-    - $sudo apt-get install -y Samba
+    ~~~
+    $sudo apt-get install -y Samba
+    ~~~
     - この時点でホスト名が解決できるようになる
         - ping raspberrypi.local
         - ホスト名を変えたい場合 /etc/hosts, /etc/hostname   
@@ -49,7 +64,10 @@
 -->
 
 - VNC
-    - $sudo raspi-config - Interfacing Options - VNC - Yes
+    ~~~
+    $sudo raspi-config - Interfacing Options - VNC - Yes
+    ~~~
+    - [VNCViewer](https://www.realvnc.com/en/connect/download/viewer/)等でログインする
 
 <!--
     - Bluetooth
@@ -71,16 +89,24 @@
 
 - [状態調査](https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md)(vcgencmd)
     - 電源不足チェック
-        - $vcgencmd get_throttled
+        ~~~
+        $vcgencmd get_throttled
+        ~~~
         - throttled 0x0 と表示されればOK
     - 温度
-        - $vcgencmd measure_temp
+        ~~~
+        $vcgencmd measure_temp
+        ~~~
     - 電圧
-        - $vcgencmd measure_volts
+        ~~~
+        $vcgencmd measure_volts
+        ~~~
     - メモリ
-        - $vcgencmd get_mem arm
-        - $vcgencmd get_mem gpu
-        - cat /proc/meminfo
+        ~~~
+        $vcgencmd get_mem arm
+        $vcgencmd get_mem gpu
+        $cat /proc/meminfo
+        ~~~
 
 - 解像度
     - 左上のラズベリーパイのアイコン - 設定 - Screen Configuration - 右クリック - 解像度を選択
@@ -88,44 +114,90 @@
 
 - カメラモジュール
     - 有効化する
-        - $sudo raspi-config - Interfacing Options - Camera - Yes
+        ~~~
+        $sudo raspi-config - Interfacing Options - Camera - Yes
+        ~~~
     - 正しく接続されているかチェック
-        - $vcgencmd get_camera
+        ~~~
+        $vcgencmd get_camera
+        ~~~
     - 撮影、確認
-        - $sudo raspistill -o XXX.jpg
-        - $gpicview XXX.jpg
-    - 動画(10秒)
-        - raspivid -t 10000 -o XXX.h264
+        ~~~
+        $sudo raspistill -o XXX.jpg
+        $gpicview XXX.jpg
+        ~~~
+    - 動画(10秒の例)
+        ~~~
+        $raspivid -t 10000 -o XXX.h264
+        ~~~
+    - 動体検知
+        - インストール
+            ~~~
+            $sudo apt-get install -y motion
+            ~~~
+        - 起動、停止
+            ~~~
+            $sudo motion
+            $sudo service motion stop
+            ~~~
+        - ブラウザから
+            - 設定
+                - http://localhost:8080
+            - ストリーム表示
+                - http://localhost:8081
+        - 設定
+            - /etc/motion/motion.conf 
+            ~~~
+            # 静止画、動画を保存する/しない設定
+            output_pictures on
+            ffmpeg_output_movies on
+            # 保存先
+            target_dir /var/lib/motion
+            ~~~
 
 - [GPIO](https://www.raspberrypi.org/documentation/usage/gpio/)
     - ピンレイアウト確認
-        - $pinout
+        ~~~
+        $pinout
+        ~~~
     - [libgpiod](https://github.com/brgl/libgpiod.git)
         - 予めインストールしておく必要のあるもの
-            - $sudo apt-get install -y autoconf
-            - $sudo apt-get install -y libtool
-            - $sudo apt-get install -y autoconf-archive
+            ~~~
+            $sudo apt-get install -y autoconf
+            $sudo apt-get install -y libtool
+            $sudo apt-get install -y autoconf-archive
+            ~~~
             - Doxygen生成に必要
-                - $sudo apt-get install -y doxygen
-                - $sudo apt-get install -y graphviz
+                ~~~
+                $sudo apt-get install -y doxygen
+                $sudo apt-get install -y graphviz
+                ~~~
         - クローン
-            - $git clone -b v0.3.x https://github.com/brgl/libgpiod.git
-                - masterブランチではなく、v0.3.xブランチでないとダメ
-            - $cd libgpiod
+            ~~~
+            $git clone -b v0.3.x https://github.com/brgl/libgpiod.git
+            ~~~
+            - masterブランチではなく、v0.3.xブランチでないとダメ
+            ~~~
+            $cd libgpiod
+            ~~~
             - インストール
-                - $./autogen.sh --enable-tools=yes --prefix=/usr/local
-                - $make
-                - $sudo make install
+                ~~~
+                $./autogen.sh --enable-tools=yes --prefix=/usr/local
+                $make
+                $sudo make install
+                ~~~
             - ドキュメント生成
-                - doxygen
+                ~~~
+                $doxygen
+                ~~~
                 - doc/html/index.htmlをブラウザで開く
         - コマンドライン
             - libgpiod.so.0 が無いと怒られる場合LD_LIBRARY_PATHにインストール先を指
             - 例えば.bashrcに以下のように書いておく
-            ~~~
-            LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
-            export LD_LIBRARY_PATH
-            ~~~
+                ~~~
+                LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+                export LD_LIBRARY_PATH
+                ~~~
             - gpiodetect
                 - GPIOチップをリストアップ
             - gpioinfo
@@ -178,6 +250,14 @@
                 $gpiomon --silent --num-events=1 gpiochip0 2 3 5
                 ~~~
 
+- GPIOからのオーディオ出力をオフする場合
+    - オンになっていると一部の電子パーツで動作がおかしくなるらしい
+    - /boot/config.txt
+        ~~~
+        # コメントアウトする
+        #dtparam=audio=on
+        ~~~
+
 <!--
 - シリアルデバッグ
     - シリアルデバッグを有効化する
@@ -217,36 +297,108 @@
 
 ## そのた
 - パスワード変更
-    - $sudo raspi-config - Change Password
-    - $sudo passwd root
+    ~~
+    $sudo raspi-config - Change Password
+    $sudo passwd root
+    ~~~
+
+- 空き容量を調査
+    ~~~
+    $sudo du -sh /*
+    ~~~
+    - /var/cache が容量を食っている場合
+        ~~~
+        $sudo apt-get clean
+        $sudo apt-get autoclean
+        ~~~
 
 - git
-    - $sudo apt-get install -y git
-    - 指定ディレクトリ名(hoge)でクローンする場合
-        - $git clone https://.... hoge
+    - インストール
+        ~~~
+        $sudo apt-get install -y git
+        ~~~
+    - 指定ディレクトリ名(TARGETDIR)でクローンする場合
+        ~~~
+        $git clone https://.... TARGETDIR
+        ~~~
     - ユーザ設定
-        - $git config --global user.email "XXX@YYY"
-        - $git config --global user.name "ZZZ"
-    - $git commit
+        ~~~
+        $git config --global user.email "XXX@YYY"
+        $git config --global user.name "ZZZ"
+        ~~~
+    - コミット
+        ~~~
+        $git commit
+        ~~~
         - エディタが立ち上がるのでコミットメッセージを書く
         - エディタを変更する場合
-            - $git config --global core.editor "emacs -nw"
-    - $git push
+            ~~~
+            $git config --global core.editor "emacs -nw"
+            ~~~
+    - プッシュ
+        ~~~
+        $git push
+        ~~~
 
 - w3m
-    - $sudo apt-get install -y w3m
+    ~~~
+    $sudo apt-get install -y w3m
+    ~~~
 
 - emacs
-    - $sudo apt-get install -y emacs
+    ~~~
+    $sudo apt-get install -y emacs
+    ~~~
     - .emacs.d/init.elを作成
+        ~~~
+            ;バックアップを作らない
+            (setq make-backup-files nil)
+            (setq auto-save-default nil)
+        ~~~
+
+- apache
     ~~~
-        ;バックアップを作らない
-        (setq make-backup-files nil)
-        (setq auto-save-default nil)
+    $sudo apt-get install -y apache2
     ~~~
+    - http://raspberrypi.local  へアクセスできるようになる
+    - 起動、停止、確認
+        ~~~
+        $sudo systemctl enable apache2
+        $sudo systemctl disable apache2
+        $sudo systemctl status apache2
+        ~~~
+    - 設定
+        - /etc/apache2/以下、apache2.conf等
+    - コンテンツ
+        - /var/www/html
+    - ログ
+        - /var/log/apach2
 
 - mathmatica
-    - $sudo apt-get install -y wolfram-engine
+    ~~~
+    $sudo apt-get install -y wolfram-engine
+    ~~~
+    
+- ベンチマーク
+    - UnixBench
+        <!--
+        $sudo apt-get install -y build-essential
+        -->
+         ~~~
+        $git clone https://github.com/kdlucas/byte-unixbench.git
+        $cd byte-unixbench/UnixBench
+        $./Run
+        ~~~
+    - [GeeXLab](https://geeks3d.com/geexlab/) (3D)
+        ~~~
+        $unzip GeeXLab_XXX.zip
+        $cd GeeXLab_FREE_rpi_gl21
+        // demo.shを編集し、起動したいデモのコメントアウトを外して起動する
+        $./demo.sh
+        // 直接コマンドライン起動してもよい
+        $./GeeXLab /demofile=\"demopack01/d11-gears/main.xml\"
+        ~~~
+    - iPerf (ネットワーク)
 
 <!--
 - VSCode
