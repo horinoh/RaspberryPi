@@ -160,6 +160,68 @@
         ~~~
         $pinout
         ~~~
+    - pigpio
+        ~~~
+        $sudo systemctl enable pigpiod
+        $sudo systemctl start pigpiod
+        $sudo systemctl restart pigpiod //!< リスタートする場合
+        ~~~
+        - センサーにはI2CやSPIを使うものがあるので有効にしておく
+            ~~~
+            $sudo raspi-config - 
+            ~~~
+        - サンプルプログラム
+            - 点滅
+                ~~~
+                import pigpio
+                import time
+                PIN = 14
+                pi = pigpio.pi()
+                pi.set_mode(PIN, pigpio.OUTPUT)
+                pi.write(PIN, pigpio.HIGH)
+                while True:
+                    pi.write(PIN, pigoio.LOW)
+                    time.sleep(1)
+                    pi.write(PIN, pigoio.HIGH)
+                    time.sleep(1)
+                ~~~
+            - PWM
+                ~~~
+                ...
+                pi.set_PWM_frequency(PIN, 50) # 周波数(Hz)... デフォルト800
+                pi.set_PWM_range(PIN, 100) # [25, 40000]
+                DUTY = 30 # [0, set_PWM_range()] ... ここでは[0, 100]
+                pi.set_PWM_dutycycle(PIN, DUTY) # Highの割合 ... ここでは 30/100
+                ~~~
+        - 実行
+            ~~~
+            $python2 XXX.py
+            ~~~
+    - [WiringPi](http://wiringpi.com/download-and-install/)
+        - インストール
+            ~~~
+            $sudo apt-get install wiringpi
+            ~~~
+        - インストールされているかチェック
+            ~~~
+            $gpio -v
+            $gpio readall
+            ~~~
+            - unable to determin board type... model: 17 とエラーになる(Pi4)場合(以下のようにしてバージョンを上げる)
+                ~~~
+                $cd /tmp
+                $wget https://project-downloads.drogon.net/wiringpi-latest.deb
+                $sudo dpkg -i wiringpi-latest.deb
+                ~~~
+        - [Sunfounderサンプル](https://github.com/sunfounder/davinci-kit-for-raspberry-pi.git)
+            ~~~
+            $git clone https://github.com/sunfounder/davinci-kit-for-raspberry-pi.git
+            ~~~
+            - コンパイル例
+                ~~~
+                $gcc 1.1.1_BlinkingLed.c -o BlinkingLed -lwiringPi
+                ~~~
+        
     - [libgpiod](https://github.com/brgl/libgpiod.git)
         - 予めインストールしておく必要のあるもの
             ~~~
@@ -295,9 +357,81 @@
     - Windowsキー右クリック - ファイル名を指定して実行 -  mmsys.cpl
         - サウンド - 一般の警告音 - Windows Background.wav をなしに変更
 
+## Vulkan
+### ドライバインストール
+- [参考](https://blogs.igalia.com/apinheiro/2020/06/v3dv-quick-guide-to-build-and-run-some-demos/)
+- アップデートをしておく
+    ~~~
+    $sudo apt-get update
+    $sudo apt-get upgrade
+    ~~~
+- 開発ツール群インストール
+    ~~~
+    $sudo apt-get install libxcb-randr0-dev libxrandr-dev \
+            libxcb-xinerama0-dev libxinerama-dev libxcursor-dev \
+            libxcb-cursor-dev libxkbcommon-dev xutils-dev \
+            xutils-dev libpthread-stubs0-dev libpciaccess-dev \
+            libffi-dev x11proto-xext-dev libxcb1-dev libxcb-*dev \
+            bison flex libssl-dev libgnutls28-dev x11proto-dri2-dev \
+            x11proto-dri3-dev libx11-dev libxcb-glx0-dev \
+            libx11-xcb-dev libxext-dev libxdamage-dev libxfixes-dev \
+            libva-dev x11proto-randr-dev x11proto-present-dev \
+            libclc-dev libelf-dev git build-essential mesa-utils \
+            libvulkan-dev ninja-build libvulkan1
+    ~~~
+- meson
+    - cmakeのようなもの
+    ~~~
+    $pip3 install meson
+    ~~~
+    - PATHは通っていないので通しておく
+    ~~~
+    PATH=$PATH:/home/pi/.local/bin
+    export PATH
+    ~~~
+- 追加インストールが必要だったもの
+    ~~~
+    $sudo apt-get install libdrm-dev
+    $sudo apt-get install libxshmfence-dev
+    $sudo apt-get install libxxf86vm-dev
+    ~~~
+- ビルド、インストール
+    ~~~
+    $cd mesa
+    $meson --prefix /home/pi/local-install --libdir lib -Dplatforms=x11,drm -Dvulkan-drivers=broadcom -Ddri-drivers= -Dgallium-drivers=v3d,kmsro,vc4 -Dbuildtype=debug _build
+    $ninja -C _build
+    $ninja -C _build install
+    ~~~
+- 環境変数 VK_ICD_FILENAMES を作成
+    - LD_LIBRARY_PATH のようなもの
+    ~~~
+    VK_ICD_FILENAMES=/home/pi/local-install/share/vulkan/icd.d/broadcom_icd.armv7l.json
+    export VK_ICD_FILENAMES
+    ~~~
+
+### サンプル
+- 追加インストールが必要だったもの
+    ~~~
+    $sudo apt-get install cmake
+    ~~~
+- ビルド
+    ~~~
+    $sudo apt-get install libassimp-dev
+    $git clone --recursive https://github.com/SaschaWillems/Vulkan.git  sascha-willems
+    $cd sascha-willems
+    $cmake -DCMAKE_BUILD_TYPE=Debug
+    $make
+    $bin/gears
+    ~~~
+- アセットを必要とするサンプルを動かす場合
+    ~~~
+    $pyhton3 download_assets.py
+    $bin/scenerendering
+    ~~~
+
 ## そのた
 - パスワード変更
-    ~~
+    ~~~
     $sudo raspi-config - Change Password
     $sudo passwd root
     ~~~
@@ -306,7 +440,7 @@
     ~~~
     $sudo du -sh /*
     ~~~
-    - /var/cache が容量を食っている場合
+    - /var/cache が容量を食っている場合は以下のようにしてみる
         ~~~
         $sudo apt-get clean
         $sudo apt-get autoclean
@@ -378,7 +512,11 @@
     ~~~
     $sudo apt-get install -y wolfram-engine
     ~~~
-    
+- ソフトウエアキーボード
+    ~~~
+    $sudo apt-get install -y matchbox-keyboard
+    ~~~
+    - アクセサリ - keyboard で起動
 - ベンチマーク
     - UnixBench
         <!--
