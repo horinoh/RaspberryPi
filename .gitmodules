@@ -1,3 +1,6 @@
 [submodule "PiStarter"]
 	path = PiStarter
 	url = https://github.com/horinoh/PiStarter.git
+[submodule "PiVK"]
+	path = PiVK
+	url = https://github.com/horinoh/PiVK.git

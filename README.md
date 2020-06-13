@@ -428,6 +428,11 @@
     $pyhton3 download_assets.py
     $bin/scenerendering
     ~~~
+### コーディング
+- -lvulkan を付けてコンパイルするだけで通る
+    ~~~
+    g++ main.cpp -lvulkan
+    ~~~
 
 ## そのた
 - パスワード変更
