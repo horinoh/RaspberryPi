@@ -47,6 +47,26 @@
         - ping raspberrypi.local
         - ホスト名を変えたい場合 /etc/hosts, /etc/hostname   
 
+    - 設定
+        ~~~
+        $mkdir /home/pi/share
+        ~~~
+        - /etc/samba/smb.conf
+        ~~~
+        [share]
+        comment = Share
+        path = /home/pi/share
+        public = yes
+        read only = no
+        browsable = yes
+        force user = pi
+        ~~~
+        ~~~
+        $sudo smbpasswd -a pi
+        ~~~
+        ~~~
+        $sudo systemctl restart smbd
+        ~~~
 <!--
 - ヘッドレス設定
     - SDカード - boot以下
@@ -68,6 +88,7 @@
     $sudo raspi-config - Interfacing Options - VNC - Yes
     ~~~
     - [VNCViewer](https://www.realvnc.com/en/connect/download/viewer/)等でログインする
+    - リモートで(モニタを直接接続せずに)X-Windowを起動したい場合、HDMIダミープラグを刺しておくと良い
 
 <!--
     - Bluetooth
