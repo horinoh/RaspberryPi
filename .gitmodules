@@ -4,3 +4,6 @@
 [submodule "PiVK"]
 	path = PiVK
 	url = https://github.com/horinoh/PiVK.git
+[submodule "Pi5"]
+	path = Pi5
+	url = https://github.com/horinoh/Pi5.git
