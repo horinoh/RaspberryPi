@@ -1,5 +1,9 @@
 # RaspberryPi
 
+## [PiVK](https://github.com/horinoh/PiVK/tree/master/)
+## [PiStarter](https://github.com/horinoh/PiStarter.git)
+## [Pi5](https://github.com/horinoh/Pi5.git)
+
 ## 初期設定
 - SDカードのbootへ以下を作る
     - wpa_supplicant.confを作成
@@ -378,8 +382,6 @@
     - Windowsキー右クリック - ファイル名を指定して実行 -  mmsys.cpl
         - サウンド - 一般の警告音 - Windows Background.wav をなしに変更
 
-## [Vulkan](https://github.com/horinoh/PiVK/tree/master/)
-
 ## そのた
 - パスワード変更
     ~~~
@@ -495,5 +497,3 @@
     - #. <( wget -O - https://code.headmelted.com/installers/apt.sh )
 	- $code-oss で起動する
 -->
-
-## [PiStarter](https://github.com/horinoh/PiStarter.git)
