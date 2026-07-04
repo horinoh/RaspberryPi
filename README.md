@@ -3,6 +3,7 @@
 ## [PiVK](https://github.com/horinoh/PiVK/tree/master/)
 ## [PiStarter](https://github.com/horinoh/PiStarter.git)
 ## [Pi5](https://github.com/horinoh/Pi5.git)
+## [Pocketterm35](https://github.com/horinoh/Pocketterm35.git)
 
 ## 初期設定
 - SDカードのbootへ以下を作る
